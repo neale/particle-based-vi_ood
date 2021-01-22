@@ -97,7 +97,6 @@ class ParticleVI(object):
         kernel_logp = torch.matmul(kernel_weight.t().detach(),
                                    loss_grad) / num_particles 
         grad = kernel_logp - kernel_grad.mean(0)
-        print (kernel_logp.norm(), kernel_grad.mean(0).norm())
         return grad
 
     def test(self, eval_loss=True):
@@ -174,9 +173,9 @@ class ParticleVI(object):
                 print ('Test Loss: {}'.format(test_loss))
                 print ('Test Acc: {}%'.format(correct*100))
                 if self.dataset == 'regression':
-                    toy.plot_regression(self.models, self.data, epoch)
+                    toy.plot_regression(self.models, self.data, epoch, tag='svgd')
                 if self.dataset == 'classification':
-                    toy.plot_classification(self.models, epoch)
+                    toy.plot_classification(self.models, epoch, tag='svgd')
 
             print ('*'*86)
 

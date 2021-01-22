@@ -19,7 +19,7 @@ def generate_regression_data(n_train, n_test):
     y_test = y_test + torch.ones_like(y_test).normal_(0, 0.04)
     return (x_train, y_train), (x_test, y_test)
 
-def plot_regression(models, data, epoch):
+def plot_regression(models, data, epoch, tag):
     sns.set_style('darkgrid')
     gt_x = torch.linspace(-6, 6, 500).view(-1, 1).cpu()
     gt_y = -(1+gt_x) * torch.sin(1.2*gt_x) 
@@ -28,11 +28,8 @@ def plot_regression(models, data, epoch):
     for model in models:
         outputs.append(model(x_test.cuda()).detach().cpu())
     outputs = torch.stack(outputs)
-    print (outputs.shape)
     mean = outputs.mean(0).squeeze()
     std = outputs.std(0).squeeze()
-    print (mean.norm(), std.norm())
-    print (mean.shape, std.shape)
     x_test = x_test.cpu().numpy()
     x_train = x_train.cpu().numpy()
 
@@ -43,7 +40,8 @@ def plot_regression(models, data, epoch):
         label='train pts', alpha=1.0, s=50)
     plt.legend(fontsize=14, loc='best')
     plt.ylim([-6, 8])
-    plt.savefig('plots/10-10svgd_regression_{}.png'.format(epoch))
+    os.makedirs('plots/', exist_ok=True)
+    plt.savefig('plots/{}-conf-regression_{}.png'.format(tag, epoch))
     plt.close('all') 
 
 
@@ -63,7 +61,7 @@ def generate_classification_data(
     
     return data, labels.long()
 
-def plot_classification(models, epoch):
+def plot_classification(models, epoch, tag):
     x = torch.linspace(-10, 10, 100)
     y = torch.linspace(-10, 10, 100)
     gridx, gridy = torch.meshgrid(x, y)
@@ -85,6 +83,7 @@ def plot_classification(models, epoch):
     p2 = plt.scatter(data[:, 0].cpu(), data[:, 1].cpu(), c='black', alpha=0.1)
     cbar = plt.colorbar(p1)
     cbar.set_label("confidance (std)")
-    plt.savefig('plots/ensemble_real_conf-std_{}.png'.format(epoch))
+    os.makedirs('plots/', exist_ok=True)
+    plt.savefig('plots/{}-conf-std_{}.png'.format(epoch, tag))
     plt.close('all')
 
